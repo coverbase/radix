@@ -1,0 +1,19 @@
+name: Publish
+
+on:
+    push:
+        branches:
+            - "main"
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        name: Publish
+        steps:
+            - uses: actions/checkout@v3
+
+            - uses: oven-sh/setup-bun@v1
+
+            - run: |
+                  bun install
+                  bun run build

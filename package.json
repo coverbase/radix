@@ -1,0 +1,23 @@
+{
+	"name": "@coverbase/radix",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"module": "./src/index.ts",
+	"types": "./dist/index.d.ts",
+	"files": ["dist"],
+	"scripts": {
+		"build": "bun build ./src/index.ts --outdir ./dist --minify && tsc --emitDeclarationOnly"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.5.3",
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	}
+}
