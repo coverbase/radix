@@ -1,18 +1,20 @@
-export type Node<T> = {
-	value?: T;
-	parameter?: string;
-	children: Record<string, Node<T>>;
+export type Match<T> = {
+	value: T;
+	parameters: Record<string, string>;
 };
 
 export class Radix<T> {
-	rootNode: Node<T>;
+	value?: T;
+	parameter?: string;
+	children: Record<string, Radix<T>>;
 
-	constructor() {
-		this.rootNode = createNode();
+	constructor(parameter?: string) {
+		this.parameter = parameter;
+		this.children = {};
 	}
 
 	insert = (key: string, value: T) => {
-		let node = this.rootNode;
+		let node: Radix<T> = this;
 
 		for (const segment of key.split("/")) {
 			const isParameter = segment.startsWith(":");
@@ -21,9 +23,7 @@ export class Radix<T> {
 			let childNode = node.children[path];
 
 			if (childNode === undefined) {
-				childNode = isParameter
-					? createNode(segment.substring(1))
-					: createNode();
+				childNode = isParameter ? new Radix<T>(segment.substring(1)) : new Radix<T>();
 
 				node.children[path] = childNode;
 			}
@@ -34,49 +34,34 @@ export class Radix<T> {
 		node.value = value;
 	};
 
-	match = (key: string, parameters: Record<string, string>): T | undefined => {
-		let node = this.rootNode;
+	match = (key: string): Match<T> | undefined => {
+		let node: Radix<T> = this;
+		const parameters: Record<string, string> = {};
 
 		for (const segment of key.split("/")) {
-			const childNode = node.children[segment] ?? node.children[":"];
+			node = node.children[segment] ?? node.children[":"];
 
-			if (childNode) {
-				node = childNode;
-
-				if (node.parameter) {
-					parameters[node.parameter] = segment;
-				}
+			if (node?.parameter) {
+				parameters[node.parameter] = segment;
 			}
 		}
 
-		return node.value;
-	};
-
-	merge = (radix: Radix<T>) => {
-		this.rootNode = combineNodes(this.rootNode, radix.rootNode);
+		if (node?.value) {
+			return {
+				value: node.value,
+				parameters,
+			};
+		}
 	};
 }
 
-export const createNode = <T>(parameter?: string): Node<T> => {
-	return {
-		parameter,
-		children: {},
-	};
-};
+export const combineRadix = <T>(firstNode: Radix<T>, secondNode: Radix<T>): Radix<T> => {
+	const combinedNode = new Radix<T>();
 
-export const combineNodes = <T>(
-	firstNode: Node<T>,
-	secondNode: Node<T>,
-): Node<T> => {
-	const combinedNode = createNode<T>();
-
-	combinedNode.value =
-		firstNode.value !== undefined ? firstNode.value : secondNode.value;
+	combinedNode.value = firstNode.value !== undefined ? firstNode.value : secondNode.value;
 
 	combinedNode.parameter =
-		firstNode.parameter !== undefined
-			? firstNode.parameter
-			: secondNode.parameter;
+		firstNode.parameter !== undefined ? firstNode.parameter : secondNode.parameter;
 
 	for (const key of new Set([
 		...Object.keys(firstNode.children),
@@ -86,7 +71,7 @@ export const combineNodes = <T>(
 		const secondChild = secondNode.children[key];
 
 		if (firstChild && secondChild) {
-			combinedNode.children[key] = combineNodes(firstChild, secondChild);
+			combinedNode.children[key] = combineRadix(firstChild, secondChild);
 		} else if (firstChild) {
 			combinedNode.children[key] = firstChild;
 		} else if (secondChild) {
