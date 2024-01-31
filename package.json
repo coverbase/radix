@@ -1,24 +1,24 @@
 {
-	"name": "@coverbase/radix",
-	"version": "0.0.3",
-	"type": "module",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
-		}
-	},
-	"module": "./dist/index.ts",
-	"types": "./dist/index.d.ts",
-	"files": ["dist"],
-	"scripts": {
-		"build": "bun build ./src/index.ts --outdir ./dist --minify && tsc --emitDeclarationOnly"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^1.5.3",
-		"@types/bun": "latest"
-	},
-	"peerDependencies": {
-		"typescript": "^5.0.0"
-	}
+    "name": "@coverbase/radix",
+    "version": "0.0.4",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "module": "./dist/index.ts",
+    "types": "./dist/index.d.ts",
+    "files": ["dist"],
+    "scripts": {
+        "build": "bun build ./src/index.ts --outdir ./dist --minify && tsc --emitDeclarationOnly"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^1.5.3",
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    }
 }
